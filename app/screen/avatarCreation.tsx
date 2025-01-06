@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Slider from '@react-native-community/slider';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { RadioButton } from 'react-native-paper';  // Import RadioButton from react-native-paper
 
 const avatarOptions = [
   { id: 'avatar1', src: require('../../assets/avatar1.png') },
@@ -124,28 +124,42 @@ const AvatarCustomization = () => {
 
         <Text style={styles.label}>Gender</Text>
         <View style={styles.radioGroup}>
-          {['female', 'male'].map((g) => (
-            <TouchableOpacity
-              key={g}
-              onPress={() => setGender(g)}
-              style={[styles.radioButton, gender === g && styles.selectedRadio]}
-            >
-              <Text style={styles.radioLabel}>{g.charAt(0).toUpperCase() + g.slice(1)}</Text>
-            </TouchableOpacity>
-          ))}
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="female"
+              status={gender === 'female' ? 'checked' : 'unchecked'}
+              onPress={() => setGender('female')}
+            />
+            <Text style={styles.radioLabel}>Female</Text>
+          </View>
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="male"
+              status={gender === 'male' ? 'checked' : 'unchecked'}
+              onPress={() => setGender('male')}
+            />
+            <Text style={styles.radioLabel}>Male</Text>
+          </View>
         </View>
 
         <Text style={styles.label}>Voice Type</Text>
         <View style={styles.radioGroup}>
-          {['female', 'male'].map((v) => (
-            <TouchableOpacity
-              key={v}
-              onPress={() => setVoice(v)}
-              style={[styles.radioButton, voice === v && styles.selectedRadio]}
-            >
-              <Text style={styles.radioLabel}>{v.charAt(0).toUpperCase() + v.slice(1)} Voice</Text>
-            </TouchableOpacity>
-          ))}
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="female"
+              status={voice === 'female' ? 'checked' : 'unchecked'}
+              onPress={() => setVoice('female')}
+            />
+            <Text style={styles.radioLabel}>Female Voice</Text>
+          </View>
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="male"
+              status={voice === 'male' ? 'checked' : 'unchecked'}
+              onPress={() => setVoice('male')}
+            />
+            <Text style={styles.radioLabel}>Male Voice</Text>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
@@ -259,17 +273,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   radioButton: {
-    padding: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#540681',
-  },
-  selectedRadio: {
-    backgroundColor: '#540681',
-    borderColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   radioLabel: {
-    color: '#00000',
+    fontSize: 16,
+    color: '#540681',
+    marginLeft: 8,
   },
   saveButton: {
     backgroundColor: '#540681',
