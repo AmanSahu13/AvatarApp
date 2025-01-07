@@ -1,3 +1,4 @@
+// import '../components/gesture-handler';
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
@@ -18,16 +19,16 @@ const SignInScreen: React.FC = () => {
       Alert.alert("Error", "Please enter your phone number and password.");
     } else {
       Alert.alert("Success", "Signed in successfully!");
-      router.push("/screen/avatarCreation"); // Redirect to avatar creation page after successful sign-in
+      router.push("./screen/avatarCreation"); // Redirect to avatar creation page after successful sign-in
     }
   };
 
   const handleSignUpRedirect = () => {
-    router.push("/screen/singUp"); // Redirect to sign-up page
+    router.push("./screen/singUp"); // Redirect to sign-up page
   };
 
   const handleForgotPassword = () => {
-    router.push("/screen/forgotPassword"); // Redirect to forgot password page
+    router.push("./screen/forgotPassword"); // Redirect to forgot password page
   };
 
   return (

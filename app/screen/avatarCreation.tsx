@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ScrollView, Modal, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import * as ImagePicker from 'expo-image-picker';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  Alert,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { RadioButton } from 'react-native-paper';
+import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import Slider from '@react-native-community/slider';
-import { RadioButton } from 'react-native-paper'; // Import RadioButton from react-native-paper
 
 const avatarOptions = [
   { id: 'avatar1', src: require('../../assets/avatar1.png') },
@@ -15,27 +24,16 @@ const avatarOptions = [
   { id: 'avatar5', src: require('../../assets/avatar5.jpg') },
 ];
 
-type RootStackParamList = {
-  Dashboard: undefined;
-  // Define other routes if necessary
-};
-
-type AvatarCreationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Dashboard'>;
-
 const AvatarCustomization = () => {
-  const navigation = useNavigation<AvatarCreationScreenNavigationProp>();
+  const router = useRouter();
   const [age, setAge] = useState(25);
   const [gender, setGender] = useState('female');
   const [voice, setVoice] = useState('female');
   const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0].id);
   const [avatarName, setAvatarName] = useState('');
   const [showOptions, setShowOptions] = useState(false);
-  const [customAvatarsCount, setCustomAvatarsCount] = useState(0); // Track number of uploaded avatars
-  const [avatarOptionsState, setAvatarOptions] = useState(avatarOptions); // Manage avatars dynamically
-
-  const handleVoiceTest = () => {
-    console.log('Testing voice:', voice);
-  };
+  const [customAvatarsCount, setCustomAvatarsCount] = useState(0);
+  const [avatarOptionsState, setAvatarOptions] = useState(avatarOptions);
 
   const handleAvatarUpload = async () => {
     if (customAvatarsCount >= 5) {
@@ -52,31 +50,47 @@ const AvatarCustomization = () => {
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const newAvatar = {
-        id: `avatar${avatarOptionsState.length + 1}`, // Generate new ID for custom avatar
-        src: { uri: result.assets[0].uri }, // Store custom avatar URI
-        alt: `Custom Avatar ${avatarOptionsState.length + 1}`,
+        id: `avatar${avatarOptionsState.length + 1}`,
+        src: { uri: result.assets[0].uri },
       };
 
-      setAvatarOptions([...avatarOptionsState, newAvatar]); // Add custom avatar to avatar options
-      setCustomAvatarsCount(customAvatarsCount + 1); // Increment custom avatars count
-      setSelectedAvatar(newAvatar.id); // Select the custom avatar
+      setAvatarOptions([...avatarOptionsState, newAvatar]);
+      setCustomAvatarsCount(customAvatarsCount + 1);
+      setSelectedAvatar(newAvatar.id);
     }
     setShowOptions(false);
   };
 
   const handleSaveChanges = () => {
     if (!avatarName.trim()) {
-      Alert.alert('Validation Error', 'Please give your AI companion a name!');
-      return;
+      Alert.alert('Error', 'Please give your AI companion a name!');
+    } else if (age < 18) {
+      Alert.alert('Error', 'Please select a valid age!');
+    } else if (!gender) {
+      Alert.alert('Error', 'Please select a gender!');
+    } else if (!voice) {
+      Alert.alert('Error', 'Please select a voice!');
+    } else {
+      Alert.alert('Success', 'Proceeding to Dashboard!');
+
+      // Navigate to the Dashboard page using router.push
+      router.push({
+        pathname: '/screen/dashboard',
+        params: {
+          selectedAvatar: avatarOptionsState.find(a => a.id === selectedAvatar)?.src.uri,
+          avatarName,
+          age,
+          gender,
+          voice,
+        },
+      });
+      
+      
     }
-    console.log('Save changes', { selectedAvatar, avatarName, age, gender, voice });
-    navigation.navigate('Dashboard');
+    console.log('Save changes:', { selectedAvatar, avatarName, age, gender, voice });
   };
 
-  const currentAvatarSrc =
-    selectedAvatar === 'custom'
-      ? { uri: avatarOptionsState.find((a) => a.id === selectedAvatar)?.src.uri }
-      : avatarOptionsState.find((a) => a.id === selectedAvatar)?.src;
+  const currentAvatarSrc = avatarOptionsState.find(a => a.id === selectedAvatar)?.src;
 
   return (
     <ScrollView style={styles.container}>
@@ -97,11 +111,14 @@ const AvatarCustomization = () => {
         </View>
 
         <View style={styles.avatarOptions}>
-          {avatarOptionsState.map((avatar) => (
+          {avatarOptionsState.map(avatar => (
             <TouchableOpacity
               key={avatar.id}
               onPress={() => setSelectedAvatar(avatar.id)}
-              style={[styles.avatarOption, selectedAvatar === avatar.id && styles.selectedOption]}
+              style={[
+                styles.avatarOption,
+                selectedAvatar === avatar.id && styles.selectedOption,
+              ]}
             >
               <Image source={avatar.src} style={styles.optionImage} />
             </TouchableOpacity>
@@ -124,32 +141,42 @@ const AvatarCustomization = () => {
 
         <Text style={styles.label}>Gender</Text>
         <View style={styles.radioGroup}>
-          {['female', 'male'].map((g) => (
-            <View key={g} style={styles.radioButton}>
-              <RadioButton
-                value={g}
-                status={gender === g ? 'checked' : 'unchecked'}
-                onPress={() => setGender(g)}
-                color="#7C3AED"
-              />
-              <Text style={styles.radioLabel}>{g.charAt(0).toUpperCase() + g.slice(1)}</Text>
-            </View>
-          ))}
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="female"
+              status={gender === 'female' ? 'checked' : 'unchecked'}
+              onPress={() => setGender('female')}
+            />
+            <Text style={styles.radioLabel}>Female</Text>
+          </View>
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="male"
+              status={gender === 'male' ? 'checked' : 'unchecked'}
+              onPress={() => setGender('male')}
+            />
+            <Text style={styles.radioLabel}>Male</Text>
+          </View>
         </View>
 
         <Text style={styles.label}>Voice Type</Text>
         <View style={styles.radioGroup}>
-          {['female', 'male'].map((v) => (
-            <View key={v} style={styles.radioButton}>
-              <RadioButton
-                value={v}
-                status={voice === v ? 'checked' : 'unchecked'}
-                onPress={() => setVoice(v)}
-                color="#7C3AED"
-              />
-              <Text style={styles.radioLabel}>{v.charAt(0).toUpperCase() + v.slice(1)} Voice</Text>
-            </View>
-          ))}
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="female"
+              status={voice === 'female' ? 'checked' : 'unchecked'}
+              onPress={() => setVoice('female')}
+            />
+            <Text style={styles.radioLabel}>Female Voice</Text>
+          </View>
+          <View style={styles.radioButton}>
+            <RadioButton
+              value="male"
+              status={voice === 'male' ? 'checked' : 'unchecked'}
+              onPress={() => setVoice('male')}
+            />
+            <Text style={styles.radioLabel}>Male Voice</Text>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
@@ -176,7 +203,7 @@ const AvatarCustomization = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#540681',
+    backgroundColor: '#fff',
     padding: 20,
   },
   content: {
@@ -185,7 +212,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#540681',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -198,7 +225,7 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: '#540681',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
@@ -211,7 +238,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: '#540681',
     padding: 10,
     borderRadius: 5,
     backgroundColor: '#fff',
@@ -227,7 +254,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedOption: {
-    borderColor: '#fff',
+    borderColor: '#540681',
   },
   optionImage: {
     width: 50,
@@ -240,6 +267,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     backgroundColor: '#fff',
+    borderColor: '#540681',
     borderRadius: 25,
     marginLeft: 10,
   },
@@ -249,7 +277,8 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: '#fff',
+    fontWeight: 'bold',
+    color: '#540681',
     marginBottom: 10,
   },
   slider: {
@@ -266,17 +295,17 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     fontSize: 16,
-    color: '#fff',
+    color: '#540681',
     marginLeft: 8,
   },
   saveButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#540681',
     padding: 15,
     borderRadius: 5,
     marginTop: 20,
   },
   saveText: {
-    color: '#540681',
+    color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
   },
