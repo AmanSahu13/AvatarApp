@@ -1,30 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router'; // Use useRouter from expo-router
 
+// Define the Message type
 interface Message {
   role: 'user' | 'ai';
   content: string;
   isVoice: boolean;
 }
 
-interface DashboardProps {
-  route: any; // added route prop to access passed data
-}
-
-const Dashboard = ({ route }: DashboardProps) => {
+const Dashboard = ({ route }: { route: any }) => {
+  const router = useRouter();  // Using useRouter from expo-router
   const { selectedAvatar, avatarName, age, gender, voice } = route?.params || {};
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);  // Use the Message type for state
   const [input, setInput] = useState('');
   const [isVoiceMode, setIsVoiceMode] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
@@ -38,7 +28,6 @@ const Dashboard = ({ route }: DashboardProps) => {
   const handleSendMessage = (content: string, isVoice: boolean) => {
     if (content.trim()) {
       setMessages((prev) => [...prev, { role: 'user', content, isVoice }]);
-      // Simulate AI response
       setTimeout(() => {
         const aiResponse = `I received your ${isVoice ? 'voice' : 'text'} message: "${content}". How can I assist you further?`;
         setMessages((prev) => [...prev, { role: 'ai', content: aiResponse, isVoice }]);
@@ -49,7 +38,6 @@ const Dashboard = ({ route }: DashboardProps) => {
 
   const handleVoiceInput = () => {
     setIsRecording(true);
-    // Simulate voice recording for 3 seconds
     setTimeout(() => {
       setIsRecording(false);
       const voiceContent = 'This is a simulated voice input.';
@@ -60,16 +48,16 @@ const Dashboard = ({ route }: DashboardProps) => {
   const toggleChatMode = () => {
     setIsVoiceMode((prev) => !prev);
     if (!isVoiceMode) {
-      // Focus on TextInput when switching to text mode
       setTimeout(() => textInputRef.current?.focus(), 100);
     }
   };
 
+  const handleSettings = () => {
+    router.push('/screen/settings'); // Redirect to settings page
+  };
+
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>AI Companion Dashboard</Text>
@@ -83,9 +71,7 @@ const Dashboard = ({ route }: DashboardProps) => {
               overlayContainerStyle={styles.avatar}
             />
             <Text style={styles.aiText}>{avatarName || 'Your AI Companion'}</Text>
-            <Text style={styles.aiDescription}>
-              {`I am a ${age}-year-old ${gender} with a ${voice} voice.`}
-            </Text>
+            <Text style={styles.aiDescription}>{`I am a ${age}-year-old ${gender} with a ${voice} voice.`}</Text>
             <TouchableOpacity onPress={toggleChatMode} style={styles.button}>
               <Text style={styles.buttonText}>
                 {isVoiceMode ? 'Switch to Text Chat' : 'Switch to Voice Chat'}
@@ -93,19 +79,9 @@ const Dashboard = ({ route }: DashboardProps) => {
             </TouchableOpacity>
           </View>
 
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.messagesContainer}
-            contentContainerStyle={styles.messagesContent}
-          >
+          <ScrollView ref={scrollViewRef} style={styles.messagesContainer} contentContainerStyle={styles.messagesContent}>
             {messages.map((message, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.message,
-                  message.role === 'user' ? styles.userMessage : styles.aiMessage,
-                ]}
-              >
+              <View key={index} style={[styles.message, message.role === 'user' ? styles.userMessage : styles.aiMessage]}>
                 <Avatar size="small" rounded title={message.role === 'user' ? 'U' : 'A'} />
                 <View style={styles.messageContent}>
                   {message.isVoice && <Ionicons name="mic" size={16} color="gray" />}
@@ -117,15 +93,9 @@ const Dashboard = ({ route }: DashboardProps) => {
 
           <View style={styles.inputContainer}>
             {isVoiceMode ? (
-              <TouchableOpacity
-                onPress={handleVoiceInput}
-                style={[styles.recordButton, isRecording ? styles.recording : {}]}
-                disabled={isRecording}
-              >
+              <TouchableOpacity onPress={handleVoiceInput} style={[styles.recordButton, isRecording ? styles.recording : {}]} disabled={isRecording}>
                 <Ionicons name={isRecording ? 'mic-off' : 'mic'} size={20} color="white" />
-                <Text style={styles.recordButtonText}>
-                  {isRecording ? 'Recording...' : 'Speak'}
-                </Text>
+                <Text style={styles.recordButtonText}>{isRecording ? 'Recording...' : 'Speak'}</Text>
               </TouchableOpacity>
             ) : (
               <>
@@ -138,10 +108,7 @@ const Dashboard = ({ route }: DashboardProps) => {
                   placeholder="Type your message..."
                   placeholderTextColor="#540681"
                 />
-                <TouchableOpacity
-                  onPress={() => handleSendMessage(input, false)}
-                  style={styles.sendButton}
-                >
+                <TouchableOpacity onPress={() => handleSendMessage(input, false)} style={styles.sendButton}>
                   <Ionicons name="send" size={20} color="white" />
                 </TouchableOpacity>
               </>
@@ -149,6 +116,11 @@ const Dashboard = ({ route }: DashboardProps) => {
           </View>
         </View>
       </View>
+
+      {/* Settings Button */}
+      <TouchableOpacity onPress={handleSettings} style={styles.settingsButton}>
+        <Ionicons name="settings" size={30} color="white" />
+      </TouchableOpacity>
     </KeyboardAvoidingView>
   );
 };
@@ -186,7 +158,6 @@ const styles = StyleSheet.create({
   },
   avatar: {
     backgroundColor: '#540681',
-    borderColor: '#540681',
   },
   aiText: {
     fontSize: 18,
@@ -213,7 +184,6 @@ const styles = StyleSheet.create({
   messagesContainer: {
     flex: 1,
     marginVertical: 16,
-    // backgroundColor:'rgba(83, 6, 128, 0.16)',
     backgroundColor: 'rgba(83, 4, 143, 0.76)',
     borderRadius: 15,
   },
@@ -247,13 +217,13 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: '#e1bee7', // Changed to light purple
+    backgroundColor: '#e1bee7',
     borderRadius: 8,
     padding: 12,
-    color: '#540681', // Dark purple for text
+    color: '#540681',
     fontSize: 16,
-    borderWidth: 1, // Added border
-    borderColor: '#540681', // Dark purple border
+    borderWidth: 1,
+    borderColor: '#540681',
   },
   sendButton: {
     backgroundColor: '#540681',
@@ -277,6 +247,11 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: 'white',
     fontSize: 16,
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
   },
 });
 
