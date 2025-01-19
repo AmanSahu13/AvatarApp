@@ -28,7 +28,7 @@ const AvatarCustomization = () => {
   const router = useRouter();
   const [age, setAge] = useState(25);
   const [gender, setGender] = useState('female');
-  const [voice, setVoice] = useState('female');
+  // const [voice, setVoice] = useState('female');
   const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0].id);
   const [avatarName, setAvatarName] = useState('');
   const [showOptions, setShowOptions] = useState(false);
@@ -68,26 +68,27 @@ const AvatarCustomization = () => {
       Alert.alert('Error', 'Please select a valid age!');
     } else if (!gender) {
       Alert.alert('Error', 'Please select a gender!');
-    } else if (!voice) {
-      Alert.alert('Error', 'Please select a voice!');
+    // } else if (!voice) {
+    //   Alert.alert('Error', 'Please select a voice!');
     } else {
       Alert.alert('Success', 'Proceeding to Dashboard!');
 
       // Navigate to the Dashboard page using router.push
       router.push({
-        pathname: '/screen/dashboard',
+        pathname: '/screen/Dashboard',
         params: {
           selectedAvatar: avatarOptionsState.find(a => a.id === selectedAvatar)?.src.uri,
           avatarName,
           age,
           gender,
-          voice,
+          // voice,
         },
       });
       
       
     }
-    console.log('Save changes:', { selectedAvatar, avatarName, age, gender, voice });
+    console.log('Save changes:', { selectedAvatar, avatarName, age, gender });
+    // console.log('Save changes:', { selectedAvatar, avatarName, age, gender, voice });
   };
 
   const currentAvatarSrc = avatarOptionsState.find(a => a.id === selectedAvatar)?.src;
@@ -158,7 +159,7 @@ const AvatarCustomization = () => {
             <Text style={styles.radioLabel}>Male</Text>
           </View>
         </View>
-
+{/* 
         <Text style={styles.label}>Voice Type</Text>
         <View style={styles.radioGroup}>
           <View style={styles.radioButton}>
@@ -177,7 +178,7 @@ const AvatarCustomization = () => {
             />
             <Text style={styles.radioLabel}>Male Voice</Text>
           </View>
-        </View>
+        </View> */}
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
           <Text style={styles.saveText}>Save Changes</Text>
