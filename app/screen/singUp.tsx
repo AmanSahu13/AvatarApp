@@ -4,18 +4,19 @@ import { useRouter } from "expo-router";
 
 const SignUpScreen: React.FC = () => {
   const [isEmail, setIsEmail] = useState(true);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [fullName, setFullName] = useState("");
+  // const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [cpassword, setCPassword] = useState("");
   const [username, setUsername] = useState("");
   const router = useRouter();
 
   const handleCreateAccount = () => {
-    if (isEmail && (!email || !password || !username)) {
+    if (isEmail && (!email || !password || !cpassword || !username)) {
       Alert.alert("Error", "Please fill all the fields.");
-    } else if (!isEmail && (!phone || !password || !username)) {
+    } else if (!isEmail && (!phone || !password || !cpassword || !username)) {
       Alert.alert("Error", "Please fill all the fields.");
     } else {
       Alert.alert("Success", "Account created successfully!");
@@ -51,17 +52,17 @@ const SignUpScreen: React.FC = () => {
           onChangeText={setUsername}
         />
         <TextInput
-          placeholder="First Name"
+          placeholder="Full Name"
           style={styles.input}
-          value={firstName}
-          onChangeText={setFirstName}
+          value={fullName}
+          onChangeText={setFullName}
         />
-        <TextInput
+        {/* <TextInput
           placeholder="Last Name"
           style={styles.input}
           value={lastName}
           onChangeText={setLastName}
-        />
+        /> */}
         {!isEmail && (
           <TextInput
             placeholder="Phone number"
@@ -86,6 +87,13 @@ const SignUpScreen: React.FC = () => {
           style={styles.input}
           value={password}
           onChangeText={setPassword}
+        />
+        <TextInput
+          placeholder="Confirm Password"
+          secureTextEntry
+          style={styles.input}
+          value={cpassword}
+          onChangeText={setCPassword}
         />
         <TouchableOpacity style={styles.button} onPress={handleCreateAccount}>
           <Text style={styles.buttonText}>Create Account</Text>
