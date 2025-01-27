@@ -1,16 +1,35 @@
-// import '../components/gesture-handler';
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
+import React, { useState, useRef } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  Animated,
+  Easing,
+} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 const SignInScreen: React.FC = () => {
   const [isEmail, setIsEmail] = useState(true);
-  const [username, setUsername] = useState("");
+  const slideAnim = useRef(new Animated.Value(0)).current;
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+
+  const toggleSwitch = () => {
+    Animated.timing(slideAnim, {
+      toValue: isEmail ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+      easing: Easing.inOut(Easing.ease),
+    }).start();
+    setIsEmail(!isEmail);
+  };
 
   const handleSignIn = () => {
     if (isEmail && (!email || !password)) {
@@ -19,16 +38,19 @@ const SignInScreen: React.FC = () => {
       Alert.alert("Error", "Please enter your phone number and password.");
     } else {
       Alert.alert("Success", "Signed in successfully!");
-      router.push("./screen/avatarCreation"); // Redirect to avatar creation page after successful sign-in
+      router.push("./screen/avatarCreation");
     }
   };
 
-  const handleSignUpRedirect = () => {
-    router.push("./screen/singUp"); // Redirect to sign-up page
+  const handleForgotPassword = () => {
+    router.push("./screen/forgotPassword");
   };
 
-  const handleForgotPassword = () => {
-    router.push("./screen/forgotPassword"); // Redirect to forgot password page
+  const handleSignUpRedirect = () => {
+    router.push("./screen/singUp");
+  };
+  const handleGoogleLogin = () => {
+    Alert.alert("Google Login", "Redirecting to Google login...");
   };
 
   return (
@@ -40,12 +62,30 @@ const SignInScreen: React.FC = () => {
       <View style={styles.formContainer}>
         <Text style={styles.formTitle}>Sign In</Text>
         <Text style={styles.formSubtitle}>Enter your credentials below</Text>
-        <View style={styles.switchContainer}>
-          <TouchableOpacity onPress={() => setIsEmail(true)}>
-            <Text style={[styles.switchOption, isEmail && styles.activeSwitchOption]}>Email</Text>
+        {/* Sliding Toggle Button */}
+        <View style={styles.toggleContainer}>
+          <View style={styles.toggleBackground}>
+            <Animated.View
+              style={[
+                styles.toggleSlider,
+                {
+                  transform: [
+                    {
+                      translateX: slideAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 100], // Adjust for the width of each option
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            />
+          </View>
+          <TouchableOpacity style={styles.toggleOption} onPress={() => !isEmail && toggleSwitch()}>
+            <Text style={[styles.toggleText, isEmail && styles.activeToggleText]}>Email</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setIsEmail(false)}>
-            <Text style={[styles.switchOption, !isEmail && styles.activeSwitchOption]}>Phone</Text>
+          <TouchableOpacity style={styles.toggleOption} onPress={() => isEmail && toggleSwitch()}>
+            <Text style={[styles.toggleText, !isEmail && styles.activeToggleText]}>Phone</Text>
           </TouchableOpacity>
         </View>
         {!isEmail && (
@@ -76,13 +116,14 @@ const SignInScreen: React.FC = () => {
         <TouchableOpacity onPress={handleForgotPassword}>
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleSignIn}>
+        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
           <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
         <Text style={styles.orText}>OR CONTINUE WITH</Text>
         <View style={styles.socialContainer}>
-          <FontAwesome name="github" size={24} color="#fff" style={styles.socialIcon} />
-          <FontAwesome name="twitter" size={24} color="#fff" style={styles.socialIcon} />
+          <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin}>
+            <FontAwesome name="google" size={24} color="#fff" />
+          </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={handleSignUpRedirect}>
           <Text style={styles.signUpText}>
@@ -103,7 +144,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    flex: 1,
     alignItems: "center",
     marginVertical: 30,
   },
@@ -138,20 +178,40 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 16,
   },
-  switchContainer: {
+  toggleContainer: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
+    position: "relative",
   },
-  switchOption: {
-    fontSize: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+  toggleBackground: {
+    position: "absolute",
+    backgroundColor: "#ddd",
+    height: 40,
+    width: 200,
     borderRadius: 20,
-    color: "#666",
   },
-  activeSwitchOption: {
+  toggleSlider: {
+    position: "absolute",
+    height: 40,
+    width: 100,
     backgroundColor: "#4B0082",
+    borderRadius: 20,
+    zIndex: 1,
+  },
+  toggleOption: {
+    width: 100,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 2,
+  },
+  toggleText: {
+    color: "#666",
+    fontWeight: "bold",
+  },
+  activeToggleText: {
     color: "#fff",
   },
   input: {
@@ -195,6 +255,13 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 24,
   },
+  socialButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#4B0082",
+    padding: 12,
+    borderRadius: 24,
+  },
   signUpText: {
     textAlign: "center",
     color: "#666",
@@ -202,6 +269,7 @@ const styles = StyleSheet.create({
   signUpLink: {
     color: "#4B0082",
     fontWeight: "bold",
+    fontSize: 18,
   },
 });
 
