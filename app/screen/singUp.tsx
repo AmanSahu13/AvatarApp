@@ -37,14 +37,14 @@ const SignUpScreen: React.FC = () => {
       <View style={styles.formContainer}>
         <Text style={styles.formTitle}>Create Account</Text>
         <Text style={styles.formSubtitle}>Enter your details to get started</Text>
-        <View style={styles.switchContainer}>
+        {/* <View style={styles.switchContainer}>
           <TouchableOpacity onPress={() => setIsEmail(true)}>
             <Text style={[styles.switchOption, isEmail && styles.activeSwitchOption]}>Email</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setIsEmail(false)}>
             <Text style={[styles.switchOption, !isEmail && styles.activeSwitchOption]}>Phone</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
         <TextInput
           placeholder="Username"
           style={styles.input}
@@ -63,15 +63,6 @@ const SignUpScreen: React.FC = () => {
           value={lastName}
           onChangeText={setLastName}
         /> */}
-        {!isEmail && (
-          <TextInput
-            placeholder="Phone number"
-            keyboardType="phone-pad"
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-          />
-        )}
         {isEmail && (
           <TextInput
             placeholder="Email"
@@ -79,6 +70,15 @@ const SignUpScreen: React.FC = () => {
             style={styles.input}
             value={email}
             onChangeText={setEmail}
+          />
+        )}
+        {isEmail && (
+          <TextInput
+            placeholder="Phone number"
+            keyboardType="phone-pad"
+            style={styles.input}
+            value={phone}
+            onChangeText={setPhone}
           />
         )}
         <TextInput
