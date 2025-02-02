@@ -16,24 +16,31 @@ import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import Slider from '@react-native-community/slider';
 
-const avatarOptions = [
-  { id: 'avatar1', src: require('../../assets/avatar1.png') },
-  { id: 'avatar2', src: require('../../assets/avatar2.jpg') },
-  { id: 'avatar3', src: require('../../assets/avatar3.png') },
-  { id: 'avatar4', src: require('../../assets/avatar4.png') },
-  { id: 'avatar5', src: require('../../assets/avatar5.jpg') },
+const maleAvatars = [
+  { id: 'male1', src: require('../../assets/male1.jpg') },
+  { id: 'male2', src: require('../../assets/male2.png') },
+  { id: 'male2', src: require('../../assets/male3.png') },
+  { id: 'male2', src: require('../../assets/male4.png') },
+  { id: 'male2', src: require('../../assets/male5.png') },
+];
+
+const femaleAvatars = [
+  { id: 'female1', src: require('../../assets/female1.png') },
+  { id: 'female2', src: require('../../assets/female2.png') },
+  { id: 'female2', src: require('../../assets/female3.jpg') },
+  { id: 'female2', src: require('../../assets/female4.jpg') },
 ];
 
 const AvatarCustomization = () => {
   const router = useRouter();
   const [age, setAge] = useState(25);
   const [gender, setGender] = useState('female');
-  // const [voice, setVoice] = useState('female');
-  const [selectedAvatar, setSelectedAvatar] = useState(avatarOptions[0].id);
+  const [selectedAvatar, setSelectedAvatar] = useState(femaleAvatars[0].id);
   const [avatarName, setAvatarName] = useState('');
   const [showOptions, setShowOptions] = useState(false);
   const [customAvatarsCount, setCustomAvatarsCount] = useState(0);
-  const [avatarOptionsState, setAvatarOptions] = useState(avatarOptions);
+
+  const getAvatarOptions = () => (gender === 'male' ? maleAvatars : femaleAvatars);
 
   const handleAvatarUpload = async () => {
     if (customAvatarsCount >= 5) {
@@ -50,11 +57,10 @@ const AvatarCustomization = () => {
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const newAvatar = {
-        id: `avatar${avatarOptionsState.length + 1}`,
+        id: `avatar${getAvatarOptions().length + 1}`,
         src: { uri: result.assets[0].uri },
       };
 
-      setAvatarOptions([...avatarOptionsState, newAvatar]);
       setCustomAvatarsCount(customAvatarsCount + 1);
       setSelectedAvatar(newAvatar.id);
     }
@@ -68,30 +74,22 @@ const AvatarCustomization = () => {
       Alert.alert('Error', 'Please select a valid age!');
     } else if (!gender) {
       Alert.alert('Error', 'Please select a gender!');
-    // } else if (!voice) {
-    //   Alert.alert('Error', 'Please select a voice!');
     } else {
       Alert.alert('Success', 'Proceeding to Dashboard!');
 
-      // Navigate to the Dashboard page using router.push
       router.push({
         pathname: '/screen/Dashboard',
         params: {
-          selectedAvatar: avatarOptionsState.find(a => a.id === selectedAvatar)?.src.uri,
+          selectedAvatar: getAvatarOptions().find(a => a.id === selectedAvatar)?.src.uri,
           avatarName,
           age,
           gender,
-          // voice,
         },
       });
-      
-      
     }
-    console.log('Save changes:', { selectedAvatar, avatarName, age, gender });
-    // console.log('Save changes:', { selectedAvatar, avatarName, age, gender, voice });
   };
 
-  const currentAvatarSrc = avatarOptionsState.find(a => a.id === selectedAvatar)?.src;
+  const currentAvatarSrc = getAvatarOptions().find(a => a.id === selectedAvatar)?.src;
 
   return (
     <ScrollView style={styles.container}>
@@ -112,7 +110,7 @@ const AvatarCustomization = () => {
         </View>
 
         <View style={styles.avatarOptions}>
-          {avatarOptionsState.map(avatar => (
+          {getAvatarOptions().map(avatar => (
             <TouchableOpacity
               key={avatar.id}
               onPress={() => setSelectedAvatar(avatar.id)}
@@ -159,47 +157,15 @@ const AvatarCustomization = () => {
             <Text style={styles.radioLabel}>Male</Text>
           </View>
         </View>
-{/* 
-        <Text style={styles.label}>Voice Type</Text>
-        <View style={styles.radioGroup}>
-          <View style={styles.radioButton}>
-            <RadioButton
-              value="female"
-              status={voice === 'female' ? 'checked' : 'unchecked'}
-              onPress={() => setVoice('female')}
-            />
-            <Text style={styles.radioLabel}>Female Voice</Text>
-          </View>
-          <View style={styles.radioButton}>
-            <RadioButton
-              value="male"
-              status={voice === 'male' ? 'checked' : 'unchecked'}
-              onPress={() => setVoice('male')}
-            />
-            <Text style={styles.radioLabel}>Male Voice</Text>
-          </View>
-        </View> */}
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
           <Text style={styles.saveText}>Save Changes</Text>
         </TouchableOpacity>
       </View>
-
-      <Modal visible={showOptions} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.modalOption} onPress={handleAvatarUpload}>
-              <Text style={styles.modalOptionText}>Upload Photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalOption} onPress={() => setShowOptions(false)}>
-              <Text style={styles.modalOptionText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
