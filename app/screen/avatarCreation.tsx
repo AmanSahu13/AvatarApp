@@ -19,16 +19,16 @@ import Slider from '@react-native-community/slider';
 const maleAvatars = [
   { id: 'male1', src: require('../../assets/male1.jpg') },
   { id: 'male2', src: require('../../assets/male2.png') },
-  { id: 'male2', src: require('../../assets/male3.png') },
-  { id: 'male2', src: require('../../assets/male4.png') },
-  { id: 'male2', src: require('../../assets/male5.png') },
+  { id: 'male3', src: require('../../assets/male3.png') },
+  { id: 'male4', src: require('../../assets/male4.png') },
+  { id: 'male5', src: require('../../assets/male5.png') },
 ];
 
 const femaleAvatars = [
   { id: 'female1', src: require('../../assets/female1.png') },
   { id: 'female2', src: require('../../assets/female2.png') },
-  { id: 'female2', src: require('../../assets/female3.jpg') },
-  { id: 'female2', src: require('../../assets/female4.jpg') },
+  { id: 'female3', src: require('../../assets/female3.jpg') },
+  { id: 'female4', src: require('../../assets/female4.jpg') },
 ];
 
 const AvatarCustomization = () => {
@@ -43,7 +43,7 @@ const AvatarCustomization = () => {
   const getAvatarOptions = () => (gender === 'male' ? maleAvatars : femaleAvatars);
 
   const handleAvatarUpload = async () => {
-    if (customAvatarsCount >= 5) {
+    if (customAvatarsCount >= 8) {
       Alert.alert('Limit Reached', 'You can only upload up to 5 avatars.');
       return;
     }
@@ -122,10 +122,6 @@ const AvatarCustomization = () => {
               <Image source={avatar.src} style={styles.optionImage} />
             </TouchableOpacity>
           ))}
-          <TouchableOpacity style={styles.customButton} onPress={() => setShowOptions(true)}>
-            <Ionicons name="image" size={24} color="#7C3AED" />
-            <Text style={styles.customText}>Custom</Text>
-          </TouchableOpacity>
         </View>
 
         <Text style={styles.label}>Age: {age} years</Text>
@@ -227,20 +223,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-  },
-  customButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 50,
-    height: 50,
-    backgroundColor: '#fff',
-    borderColor: '#540681',
-    borderRadius: 25,
-    marginLeft: 10,
-  },
-  customText: {
-    fontSize: 10,
-    color: '#540681',
   },
   label: {
     fontSize: 16,
