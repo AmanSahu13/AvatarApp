@@ -15,6 +15,7 @@ import { RadioButton } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import Slider from '@react-native-community/slider';
+import { Picker } from '@react-native-picker/picker';
 
 const maleAvatars = [
   { id: 'male1', src: require('../../assets/male1.jpg') },
@@ -39,6 +40,7 @@ const AvatarCustomization = () => {
   const [avatarName, setAvatarName] = useState('');
   const [showOptions, setShowOptions] = useState(false);
   const [customAvatarsCount, setCustomAvatarsCount] = useState(0);
+  const [personality, setPersonality] = useState('Friendly'); // New state for personality
 
   const getAvatarOptions = () => (gender === 'male' ? maleAvatars : femaleAvatars);
 
@@ -84,6 +86,7 @@ const AvatarCustomization = () => {
           avatarName,
           age,
           gender,
+          personality, // Passing personality as part of the params
         },
       });
     }
@@ -154,6 +157,19 @@ const AvatarCustomization = () => {
           </View>
         </View>
 
+        {/* Personality Dropdown */}
+        <Text style={styles.label}>Personality</Text>
+        <Picker
+          selectedValue={personality}
+          style={styles.picker}
+          onValueChange={(itemValue) => setPersonality(itemValue)}
+        >
+          <Picker.Item label="Friendly" value="Friendly" />
+          <Picker.Item label="Serious" value="Serious" />
+          <Picker.Item label="Fun" value="Fun" />
+          <Picker.Item label="Motivational" value="Motivational" />
+        </Picker>
+
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
           <Text style={styles.saveText}>Save Changes</Text>
         </TouchableOpacity>
@@ -161,7 +177,6 @@ const AvatarCustomization = () => {
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -247,6 +262,11 @@ const styles = StyleSheet.create({
     color: '#540681',
     marginLeft: 8,
   },
+  picker: {
+    height: 50,
+    width: '100%',
+    marginBottom: 20,
+  },
   saveButton: {
     backgroundColor: '#540681',
     padding: 15,
@@ -257,27 +277,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-  },
-  modalOption: {
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  modalOptionText: {
-    fontSize: 16,
-    color: '#7C3AED',
   },
 });
 
