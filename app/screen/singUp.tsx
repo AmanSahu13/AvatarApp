@@ -61,7 +61,9 @@ const SignUpScreen: React.FC = () => {
     setPassword(password);
     validatePasswordStrength(password);
   };
-
+  const handleSignInRedirect = () => {
+    router.push("/");
+  };
   const handleCreateAccount = () => {
     if (isEmail && (!email || !password || !cpassword || !username)) {
       Alert.alert("Error", "Please fill all the fields.");
@@ -159,6 +161,11 @@ const SignUpScreen: React.FC = () => {
             <TouchableOpacity style={styles.button} onPress={handleCreateAccount}>
               <Text style={styles.buttonText}>Create Account</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={handleSignInRedirect}>
+                      <Text style={styles.signInText}>
+                        Already have an account? <Text style={styles.signInLink}>Sign In</Text>
+                      </Text>
+                    </TouchableOpacity>
           </>
         ) : (
           <>
@@ -217,6 +224,15 @@ const styles = StyleSheet.create({
   },
   weak: {
     color: 'red',
+  },
+  signInText: {
+    textAlign: "center",
+    color: "#666",
+  },
+  signInLink: {
+    color: "#4B0082",
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });
 
