@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 
 const SignInScreen: React.FC = () => {
   const [isEmail, setIsEmail] = useState(true);
+  const [isEmailValid, setIsEmailValid] = useState(true);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -40,6 +41,14 @@ const SignInScreen: React.FC = () => {
       Alert.alert("Success", "Signed in successfully!");
       router.push("./screen/avatarCreation");
     }
+  };
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  const handleEmailChange = (email: string) => {
+    setEmail(email);
+    setIsEmailValid(validateEmail(email));
   };
 
   const handleForgotPassword = () => {
@@ -97,7 +106,7 @@ const SignInScreen: React.FC = () => {
             onChangeText={setPhone}
           />
         )}
-        {isEmail && (
+        {/* {isEmail && (
           <TextInput
             placeholder="Email"
             keyboardType="email-address"
@@ -105,7 +114,19 @@ const SignInScreen: React.FC = () => {
             value={email}
             onChangeText={setEmail}
           />
-        )}
+        )} */}
+         {isEmail && (
+        <View>
+          <TextInput
+            placeholder="Email"
+            keyboardType="email-address"
+            style={[styles.input, !isEmailValid && styles.inputError]}
+            value={email}
+            onChangeText={handleEmailChange}
+          />
+          {!isEmailValid && <Text style={styles.errorText}>Please enter a valid email address.</Text>}
+        </View>
+      )}
         <TextInput
           placeholder="Password"
           secureTextEntry
@@ -221,6 +242,13 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
     backgroundColor: "#f9f9f9",
+  }, inputError: {
+    borderColor: 'red',
+    borderWidth: 1,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
   },
   button: {
     backgroundColor: "#4B0082",

@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
-import { useRouter } from "expo-router";
+import React, { useState } from 'react';
+import { View, TextInput, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; // Make sure to install @expo/vector-icons
-
 
 const SignUpScreen: React.FC = () => {
   const [isEmail, setIsEmail] = useState(true);
@@ -18,7 +17,50 @@ const SignUpScreen: React.FC = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
+  const [isEmailValid, setIsEmailValid] = useState(true);
+  const [isPhoneValid, setIsPhoneValid] = useState(true);
+  const [passwordStrength, setPasswordStrength] = useState('');
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (email: string) => {
+    setEmail(email);
+    setIsEmailValid(validateEmail(email));
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const handlePhoneChange = (phone: string) => {
+    setPhone(phone);
+    setIsPhoneValid(validatePhone(phone));
+  };
+
+  const validatePasswordStrength = (password: string) => {
+    let strength = '';
+    if (password.length >= 8) {
+      if (/[A-Z]/.test(password) && /[a-z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) {
+        strength = 'Strong';
+      } else if (/[A-Z]/.test(password) || /[a-z]/.test(password) || /[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) {
+        strength = 'Medium';
+      } else {
+        strength = 'Weak';
+      }
+    } else {
+      strength = 'Weak';
+    }
+    setPasswordStrength(strength);
+  };
+
+  const handlePasswordChange = (password: string) => {
+    setPassword(password);
+    validatePasswordStrength(password);
+  };
 
   const handleCreateAccount = () => {
     if (isEmail && (!email || !password || !cpassword || !username)) {
@@ -27,6 +69,8 @@ const SignUpScreen: React.FC = () => {
       Alert.alert("Error", "Please fill all the fields.");
     } else if (password !== cpassword) {
       Alert.alert("Error", "Passwords do not match.");
+    } else if (!isEmail && !isPhoneValid) {
+      Alert.alert("Error", "Please enter a valid 10-digit phone number.");
     } else {
       const randomOtp = Math.floor(1000 + Math.random() * 9000).toString();
       setGeneratedOtp(randomOtp);
@@ -40,7 +84,7 @@ const SignUpScreen: React.FC = () => {
   const handleVerifyOtp = () => {
     if (otp === generatedOtp) {
       Alert.alert("Success", "Account created successfully!");
-      router.push({pathname:'/screen/index'}); // Redirect to next page
+      router.push('/'); // Redirect to the index page
     } else {
       Alert.alert("Error", "Invalid OTP. Please try again.");
     }
@@ -57,23 +101,48 @@ const SignUpScreen: React.FC = () => {
           <>
             <TextInput placeholder="Username" style={styles.input} value={username} onChangeText={setUsername} />
             <TextInput placeholder="Full Name" style={styles.input} value={fullName} onChangeText={setFullName} />
-            <TextInput placeholder="Email" keyboardType="email-address" style={styles.input} value={email} onChangeText={setEmail} />
-            <TextInput placeholder="Phone Number" keyboardType="phone-pad" style={styles.input} value={phone} onChangeText={setPhone} />
+            {isEmail && (
+              <View>
+                <TextInput
+                  placeholder="Email"
+                  keyboardType="email-address"
+                  style={[styles.input, !isEmailValid && styles.inputError]}
+                  value={email}
+                  onChangeText={handleEmailChange}
+                />
+                {!isEmailValid && <Text style={styles.errorText}>Please enter a valid email address.</Text>}
+              </View>
+            )}
+            {isEmail && (
+              <View>
+                <TextInput
+                  placeholder="Phone Number"
+                  keyboardType="phone-pad"
+                  style={[styles.input, !isPhoneValid && styles.inputError]}
+                  value={phone}
+                  onChangeText={handlePhoneChange}
+                />
+                {!isPhoneValid && <Text style={styles.errorText}>Please enter a valid 10-digit phone number.</Text>}
+              </View>
+            )}
             <View>
-
               <View style={styles.inputContainer}>
                 <TextInput
                   placeholder="Password"
                   secureTextEntry={!showPassword}
                   style={styles.input}
                   value={password}
-                  onChangeText={setPassword}
+                  onChangeText={handlePasswordChange}
                 />
                 <TouchableOpacity style={styles.icon} onPress={() => setShowPassword(!showPassword)}>
                   <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="black" />
                 </TouchableOpacity>
               </View>
-
+              {password.length > 0 && (
+                <Text style={[styles.passwordStrength, passwordStrength === 'Strong' ? styles.strong : passwordStrength === 'Medium' ? styles.medium : styles.weak]}>
+                  Password Strength: {passwordStrength}
+                </Text>
+              )}
               <View style={styles.inputContainer}>
                 <TextInput
                   placeholder="Confirm Password"
@@ -87,7 +156,6 @@ const SignUpScreen: React.FC = () => {
                 </TouchableOpacity>
               </View>
             </View>
-
             <TouchableOpacity style={styles.button} onPress={handleCreateAccount}>
               <Text style={styles.buttonText}>Create Account</Text>
             </TouchableOpacity>
@@ -117,6 +185,14 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: "#ddd", borderRadius: 8, padding: 12, marginBottom: 12, backgroundColor: "#f9f9f9", flex: 1,
     paddingRight: 40,
   },
+  inputError: {
+    borderColor: 'red',
+    borderWidth: 1,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+  },
   button: { backgroundColor: "#4B0082", padding: 16, borderRadius: 8, alignItems: "center", marginTop: 8 },
   buttonText: { color: "#fff", fontWeight: "bold" },
   otpText: { fontSize: 16, textAlign: "center", marginBottom: 10 },
@@ -128,6 +204,19 @@ const styles = StyleSheet.create({
   icon: {
     position: 'absolute',
     right: 10,
+  },
+  passwordStrength: {
+    marginTop: 5,
+    fontSize: 14,
+  },
+  strong: {
+    color: 'green',
+  },
+  medium: {
+    color: 'orange',
+  },
+  weak: {
+    color: 'red',
   },
 });
 
