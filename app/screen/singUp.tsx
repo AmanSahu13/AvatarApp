@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { View, TextInput, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState, useEffect } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from "react-native";
+import { useRouter } from "expo-router";
 import { Ionicons } from '@expo/vector-icons'; // Make sure to install @expo/vector-icons
 
 const SignUpScreen: React.FC = () => {
@@ -14,12 +14,24 @@ const SignUpScreen: React.FC = () => {
   const [otp, setOtp] = useState("");
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
+  const [countdown, setCountdown] = useState(60);
+  const [canResendOtp, setCanResendOtp] = useState(false);
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showCPassword, setShowCPassword] = useState(false);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isPhoneValid, setIsPhoneValid] = useState(true);
   const [passwordStrength, setPasswordStrength] = useState('');
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showOtpInput && countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else if (countdown === 0) {
+      setCanResendOtp(true);
+    }
+    return () => clearTimeout(timer);
+  }, [showOtpInput, countdown]);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -61,9 +73,7 @@ const SignUpScreen: React.FC = () => {
     setPassword(password);
     validatePasswordStrength(password);
   };
-  const handleSignInRedirect = () => {
-    router.push("/");
-  };
+
   const handleCreateAccount = () => {
     if (isEmail && (!email || !password || !cpassword || !username)) {
       Alert.alert("Error", "Please fill all the fields.");
@@ -77,6 +87,8 @@ const SignUpScreen: React.FC = () => {
       const randomOtp = Math.floor(1000 + Math.random() * 9000).toString();
       setGeneratedOtp(randomOtp);
       setShowOtpInput(true);
+      setCountdown(60);
+      setCanResendOtp(false);
       // Remove the alert that shows the OTP for testing
       Alert.alert("OTP Sent", `Your OTP is: ${randomOtp}`); // For testing
       Alert.alert("OTP Sent", "An OTP has been sent to your email/phone.");
@@ -90,6 +102,19 @@ const SignUpScreen: React.FC = () => {
     } else {
       Alert.alert("Error", "Invalid OTP. Please try again.");
     }
+  };
+
+  const handleResendOtp = () => {
+    const randomOtp = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(randomOtp);
+    setCountdown(60);
+    setCanResendOtp(false);
+    Alert.alert("OTP Sent", `Your OTP is: ${randomOtp}`); // For testing
+    Alert.alert("OTP Sent", "An OTP has been sent to your email/phone.");
+  };
+
+  const handleSignInRedirect = () => {
+    router.push('/'); // Redirect to the index page
   };
 
   return (
@@ -115,7 +140,7 @@ const SignUpScreen: React.FC = () => {
                 {!isEmailValid && <Text style={styles.errorText}>Please enter a valid email address.</Text>}
               </View>
             )}
-            {isEmail && (
+            {!isEmail && (
               <View>
                 <TextInput
                   placeholder="Phone Number"
@@ -162,10 +187,10 @@ const SignUpScreen: React.FC = () => {
               <Text style={styles.buttonText}>Create Account</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleSignInRedirect}>
-                      <Text style={styles.signInText}>
-                        Already have an account? <Text style={styles.signInLink}>Sign In</Text>
-                      </Text>
-                    </TouchableOpacity>
+              <Text style={styles.signInText}>
+                Already have an account? <Text style={styles.signInLink}>Sign In</Text>
+              </Text>
+            </TouchableOpacity>
           </>
         ) : (
           <>
@@ -174,6 +199,12 @@ const SignUpScreen: React.FC = () => {
             <TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>
               <Text style={styles.buttonText}>Verify OTP</Text>
             </TouchableOpacity>
+            <Text style={styles.countdownText}>Time remaining: {countdown} seconds</Text>
+            {canResendOtp && (
+              <TouchableOpacity style={styles.button} onPress={handleResendOtp}>
+                <Text style={styles.buttonText}>Resend OTP</Text>
+              </TouchableOpacity>
+            )}
           </>
         )}
       </View>
@@ -226,13 +257,18 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   signInText: {
-    textAlign: "center",
-    color: "#666",
+    textAlign: 'center',
+    marginTop: 10,
+    color: '#4B0082',
   },
   signInLink: {
-    color: "#4B0082",
-    fontWeight: "bold",
-    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4B0082',
+  },
+  countdownText: {
+    textAlign: 'center',
+    marginTop: 10,
+    color: '#4B0082',
   },
 });
 
