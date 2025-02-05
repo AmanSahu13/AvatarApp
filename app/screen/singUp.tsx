@@ -196,15 +196,10 @@ const SignUpScreen: React.FC = () => {
           <>
             <Text style={styles.otpText}>Enter OTP sent to your email/phone:</Text>
             <TextInput placeholder="Enter OTP" keyboardType="number-pad" style={styles.input} value={otp} onChangeText={setOtp} />
-            <TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>
-              <Text style={styles.buttonText}>Verify OTP</Text>
+            <TouchableOpacity style={styles.button} onPress={canResendOtp ? handleResendOtp : handleVerifyOtp}>
+              <Text style={styles.buttonText}>{canResendOtp ? 'Resend OTP' : 'Verify OTP'}</Text>
             </TouchableOpacity>
             <Text style={styles.countdownText}>Time remaining: {countdown} seconds</Text>
-            {canResendOtp && (
-              <TouchableOpacity style={styles.button} onPress={handleResendOtp}>
-                <Text style={styles.buttonText}>Resend OTP</Text>
-              </TouchableOpacity>
-            )}
           </>
         )}
       </View>
