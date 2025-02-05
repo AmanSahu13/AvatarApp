@@ -19,6 +19,7 @@ const SignInScreen: React.FC = () => {
   const slideAnim = useRef(new Animated.Value(0)).current;
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [isPhoneValid, setIsPhoneValid] = useState(true);
   const [password, setPassword] = useState("");
   const router = useRouter();
 
@@ -50,7 +51,15 @@ const SignInScreen: React.FC = () => {
     setEmail(email);
     setIsEmailValid(validateEmail(email));
   };
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
 
+  const handlePhoneChange = (phone: string) => {
+    setPhone(phone);
+    setIsPhoneValid(validatePhone(phone));
+  };
   const handleForgotPassword = () => {
     router.push("./screen/forgotPassword");
   };
@@ -98,13 +107,16 @@ const SignInScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
         {!isEmail && (
-          <TextInput
-            placeholder="Phone number"
-            keyboardType="phone-pad"
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-          />
+                   <View>
+                          <TextInput
+                            placeholder="Phone Number"
+                            keyboardType="phone-pad"
+                            style={[styles.input, !isPhoneValid && styles.inputError]}
+                            value={phone}
+                            onChangeText={handlePhoneChange}
+                            />
+                            {!isPhoneValid && <Text style={styles.errorText}>Please enter a valid 10-digit phone number.</Text>}
+                    </View>
         )}
         {/* {isEmail && (
           <TextInput
