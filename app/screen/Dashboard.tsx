@@ -56,11 +56,18 @@ const Dashboard = ({ route }: { route: any }) => {
     router.push('/screen/settings'); // Redirect to settings page
   };
 
+  const handleNavigation = () => {
+    router.push('/screen/settings'); // Replace with your desired navigation route
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>AI Companion Dashboard</Text>
+          <TouchableOpacity onPress={handleNavigation} style={styles.navigationButton}>
+            <Ionicons name="settings" size={25} color="#540681" />
+          </TouchableOpacity>
         </View>
         <View style={styles.cardContent}>
           <View style={styles.avatarSection}>
@@ -142,11 +149,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#540681',
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   cardTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#540681',
+  },
+  navigationButton: {
+    padding: 10,
+    marginRight:6
   },
   cardContent: {
     flex: 1,
