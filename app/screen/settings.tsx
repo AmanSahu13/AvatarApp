@@ -39,6 +39,11 @@ const Settings = () => {
     // Add logic to delete account, e.g., API call
   };
 
+  // Handle sign out
+  const handleSignOut = () => {
+    router.push('/');
+  };
+
   // Handle navigation to AvatarCreation page
   const handleAvatarCreation = () => {
     router.push('/screen/avatarCreation');
@@ -98,13 +103,16 @@ const Settings = () => {
             <Text style={styles.optionText}>Change Password</Text>
           </TouchableOpacity>
 
+          {/* Sign Out */}
+          <TouchableOpacity style={styles.option} onPress={handleSignOut}>
+            <Text style={styles.optionText}>Sign Out</Text>
+          </TouchableOpacity>
+
           {/* Delete Account */}
           <TouchableOpacity style={[styles.option, styles.deleteOption]} onPress={handleDeleteAccount}>
             <Text style={[styles.optionText, styles.deleteOptionText]}>Delete Account</Text>
           </TouchableOpacity>
         </View>
-
-        
       </ScrollView>
 
       {/* Footer Navigation Buttons */}
