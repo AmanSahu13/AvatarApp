@@ -101,8 +101,8 @@ const AvatarCustomization = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Customize Your AI Avatar</Text>
 
         <View style={styles.avatarSection}>
@@ -166,8 +166,24 @@ const AvatarCustomization = () => {
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
           <Text style={styles.saveText}>Save Changes</Text>
         </TouchableOpacity>
+      </ScrollView>
+
+      {/* Footer Navigation Buttons */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => router.push('/screen/settings')} style={styles.footerButton}>
+          <Ionicons name="settings" size={24} color="white" />
+          <Text style={styles.footerButtonText}>Settings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/screen/Dashboard')} style={styles.footerButton}>
+          <Ionicons name="home" size={24} color="white" />
+          <Text style={styles.footerButtonText}>Dashboard</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/screen/avatarCreation')} style={styles.footerButton}>
+          <Ionicons name="create" size={24} color="white" />
+          <Text style={styles.footerButtonText}>Avatar</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -175,7 +191,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 20,
   },
   content: {
     padding: 20,
@@ -252,6 +267,22 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    backgroundColor: '#540681',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
+  footerButton: {
+    alignItems: 'center',
+  },
+  footerButtonText: {
+    color: 'white',
+    fontSize: 12,
   },
 });
 

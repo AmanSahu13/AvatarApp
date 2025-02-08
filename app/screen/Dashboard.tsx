@@ -52,22 +52,11 @@ const Dashboard = ({ route }: { route: any }) => {
     }
   };
 
-  const handleSettings = () => {
-    router.push('/screen/settings'); // Redirect to settings page
-  };
-
-  const handleNavigation = () => {
-    router.push('/screen/settings'); // Replace with your desired navigation route
-  };
-
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardTitle}>AI Companion Dashboard</Text>
-          <TouchableOpacity onPress={handleNavigation} style={styles.navigationButton}>
-            <Ionicons name="settings" size={25} color="#540681" />
-          </TouchableOpacity>
         </View>
         <View style={styles.cardContent}>
           <View style={styles.avatarSection}>
@@ -124,10 +113,21 @@ const Dashboard = ({ route }: { route: any }) => {
         </View>
       </View>
 
-      {/* Settings Button */}
-      <TouchableOpacity onPress={handleSettings} style={styles.settingsButton}>
-        <Ionicons name="settings" size={30} color="white" />
-      </TouchableOpacity>
+      {/* Footer Navigation Buttons */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => router.push('/screen/settings')} style={styles.footerButton}>
+          <Ionicons name="settings" size={24} color="white" />
+          <Text style={styles.footerButtonText}>Settings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/screen/Dashboard')} style={styles.footerButton}>
+          <Ionicons name="home" size={24} color="white" />
+          <Text style={styles.footerButtonText}>Dashboard</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/screen/avatarCreation')} style={styles.footerButton}>
+          <Ionicons name="create" size={24} color="white" />
+          <Text style={styles.footerButtonText}>Avatar</Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -156,10 +156,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#540681',
-  },
-  navigationButton: {
-    padding: 10,
-    marginRight:6
   },
   cardContent: {
     flex: 1,
@@ -265,6 +261,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
     right: 20,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 10,
+    backgroundColor: '#540681',
+  },
+  footerButton: {
+    alignItems: 'center',
+  },
+  footerButtonText: {
+    color: 'white',
+    fontSize: 12,
   },
 });
 
